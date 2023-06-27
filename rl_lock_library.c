@@ -180,8 +180,10 @@ int rl_close(rl_descriptor lfd) {
     printf("Je suis au debut de close\n");
 
     if(lfd.f->first != -2){ // Il y a au moins un verrou sur le fichier
+
+        int i = lfd.f->first;
      
-        for(int i=0; i<NB_LOCKS; i++){
+        while(i != -2){
             rl_lock lock = lfd.f->lock_table[i];
 
             // Vérifier si lfd_owner est présent dans le tableau des propriétaires du verrou
@@ -217,6 +219,8 @@ int rl_close(rl_descriptor lfd) {
             if(lfd.f->lock_table[i].next_lock == -1){
                 break;  
             }
+
+            i = lfd.f->lock_table[i].next_lock;
           
         }
     }
@@ -240,6 +244,8 @@ int rl_close(rl_descriptor lfd) {
 	if(( code = pthread_mutex_unlock(&(lfd.f->mutex))) != 0)
             thread_error(__FILE__, __LINE__, code, "unlock");
 
+
+    printf("Fin de close\n");
 
     
     return n;
